@@ -137,12 +137,12 @@
     const put = (input, data) => {
         console.log(input.value)
         const params = {
-            id: data.Id,
+            id: data.id,
             name: input.value,
             email: input.value + '@m',
             state: input.value.substr(0, 1).toUpperCase(),
-            code: data.Code,
-            zip: data.Zip
+            code: data.code,
+            zip: data.zip
         }
         const response = fetch(url(), {
             method: 'PUT',

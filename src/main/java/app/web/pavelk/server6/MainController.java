@@ -51,11 +51,45 @@ public class MainController {
                 });
     }
 
+    public Mono<ServerResponse> putOne(ServerRequest request) {
+        log.info(request.toString());
+        return request.bodyToMono(User.class).
+                flatMap(book -> {
+                    users.stream()
+                            .filter(f -> f.getId().equals(book.getId()))
+                            .findFirst()
+                            .ifPresent(f -> {
+                                f.setName(book.getName());
+                                f.setEmail(book.getEmail());
+                                f.setState(book.getState());
+                                f.setCode(book.getCode());
+                                f.setZip(book.getZip());
+                            });
+                    log.info(book.toString());
+                    return ServerResponse.ok().contentType(MediaType.APPLICATION_JSON).body(BodyInserters.fromValue(users));
+                });
+    }
+
+    public Mono<ServerResponse> deleteOne(ServerRequest request) {
+        log.info(request.toString());
+        return request.bodyToMono(User.class).
+                flatMap(book -> {
+                    users.stream()
+                            .filter(f -> f.getId().equals(book.getId()))
+                            .findFirst()
+                            .ifPresent(f -> users.remove(f));
+                    log.info(book.toString());
+                    return ServerResponse.ok().contentType(MediaType.APPLICATION_JSON).body(BodyInserters.fromValue(users));
+                });
+    }
+
     @Bean
     public RouterFunction<ServerResponse> route(MainController mainController) {
         return RouterFunctions.route()
                 .GET("/1", RequestPredicates.contentType(MediaType.APPLICATION_JSON), mainController::getOne)
                 .POST("/1", RequestPredicates.contentType(MediaType.APPLICATION_JSON), mainController::postOne)
+                .PUT("/1", RequestPredicates.contentType(MediaType.APPLICATION_JSON), mainController::putOne)
+                .DELETE("/1", RequestPredicates.contentType(MediaType.APPLICATION_JSON), mainController::deleteOne)
                 .build();
     }
 

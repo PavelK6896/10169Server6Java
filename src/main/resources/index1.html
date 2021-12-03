@@ -157,7 +157,7 @@
 
     const patch1 = (inputP, data) => {
         const params = {
-            id: data.Id,
+            id: data.id,
             zip: +inputP.value,
         }
         const response = fetch(url(), {
@@ -168,6 +168,7 @@
             },
             body: JSON.stringify(params)
         });
+        console.log(response)
         readResp(response);
     }
 

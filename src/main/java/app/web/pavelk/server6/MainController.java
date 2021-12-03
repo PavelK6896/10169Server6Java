@@ -83,6 +83,19 @@ public class MainController {
                 });
     }
 
+    public Mono<ServerResponse> patchOne(ServerRequest request) {
+        log.info(request.toString());
+        return request.bodyToMono(User.class).
+                flatMap(book -> {
+                    users.stream()
+                            .filter(f -> f.getId().equals(book.getId()))
+                            .findFirst()
+                            .ifPresent(f -> f.setZip(book.getZip()));
+                    log.info(book.toString());
+                    return ServerResponse.ok().contentType(MediaType.APPLICATION_JSON).body(BodyInserters.fromValue(users));
+                });
+    }
+
     @Bean
     public RouterFunction<ServerResponse> route(MainController mainController) {
         return RouterFunctions.route()
@@ -90,6 +103,7 @@ public class MainController {
                 .POST("/1", RequestPredicates.contentType(MediaType.APPLICATION_JSON), mainController::postOne)
                 .PUT("/1", RequestPredicates.contentType(MediaType.APPLICATION_JSON), mainController::putOne)
                 .DELETE("/1", RequestPredicates.contentType(MediaType.APPLICATION_JSON), mainController::deleteOne)
+                .PATCH("/1", RequestPredicates.contentType(MediaType.APPLICATION_JSON), mainController::patchOne)
                 .build();
     }
 
